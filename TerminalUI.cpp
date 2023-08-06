@@ -6,7 +6,7 @@ TerminalUI::TerminalUI() {}
 
 // GUI
 void TerminalUI::WelcomeMessage(const string& systemVersion) const {
-	cout << "\t\t" << systemVersion << this->m_welcomeMessage << endl << endl;
+	cout << "\n\n\t\t" << systemVersion << this->m_welcomeMessage << endl << endl;
 
 }
 
@@ -14,8 +14,10 @@ void TerminalUI::WelcomeMessage(const string& systemVersion) const {
 void TerminalUI::getChoiceGUI() const {
 	cout << "\n\n";
 	cout << "\t\t- QuitProg {Command to quit the program}" << endl;
-	cout << "\t\t- help {Help -command // It show the helper text of the command}" << endl;
+	cout << "\t\t- help {Help -command // It show the helper text of the command} // Not working" << endl;
 	cout << "\t\t- Cd {Command for changing current PATH}" << endl;
+	cout << "\t\t- ls {command to see directory / files}" << endl;
+	cout << "\t\t- clear {clear the terminal}" << endl;
 }
 
 
@@ -36,5 +38,8 @@ void TerminalUI::showErrorMessage(const string& errorCode) const {
 	}
 	else if (errorCode == "COMMAND") {
 		cout << " Error::COMMANDS::This command isn't impleted yet!";
+	}
+	else if (errorCode == "NUMARGS") {
+		cout << "Error::COMMANDS::Need more than 0 arguments!";
 	}
 }

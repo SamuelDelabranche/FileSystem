@@ -7,6 +7,8 @@
 #include "File.h"
 
 #include <filesystem>
+#include <string>
+#include <vector>
 
 
 class FileSystem
@@ -16,9 +18,14 @@ class FileSystem
 		~FileSystem();
 
 		void cd(const std::string userCommand); // Change path
-		std::string checkCommand(std::string& userCommand) const;
 
-		void getCurrentPath(const bool& jump) const; // Show the current path
+		void ls(std::string userCommand); // Show directories / Files of the current path
+		bool commandLSChecker(const std::string userCommand) const;
+
+		std::string checkCommand(std::string& userCommand) const; // return the "userCommand" in lowerCase string type
+
+		void showCurrentPath(const bool& jump) const; // Show the current path
+		std::string getCurrentPath() const; // return path in string type
 
 		void showGUI(const bool& error = false, const std::string& errorMessage = "None") const;
 

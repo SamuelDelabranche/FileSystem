@@ -18,6 +18,7 @@ FileSystem::~FileSystem() {
 
 
 
+
 // private Function
 void FileSystem::initVariables() {
 	this->m_rootDirectory = new Directory("root");
@@ -41,8 +42,12 @@ void FileSystem::lowerString(string& textToLower) const {
 // public function
 
 void FileSystem::showGUI(const bool& error, const std::string& errorMessage) const {
+	for (int i = 0; i < this->m_currentPath.string().size(); i++) {
+		cout << "-";
+	}
+
 	this->m_terminalUI->WelcomeMessage(this->m_systemVersion);
-	cout << "Your currentPATH : "; this->getCurrentPath(false); cout << endl;
+	cout << "Your currentPATH : "; this->showCurrentPath(false); cout << endl;
 
 	for (int i = 0; i < this->m_currentPath.string().size(); i++) {
 		cout << "-" ;
@@ -51,14 +56,22 @@ void FileSystem::showGUI(const bool& error, const std::string& errorMessage) con
 	if (error) {
 		m_terminalUI->showErrorMessage(errorMessage);
 	}
-	cout << "\n\n" << "\t\t Your Choice (number): ";
+	cout << "\n\n" << "\t\t Your Choice: ";
 
 
 }
 
+string FileSystem::checkCommand(string& userCommand) const {
+	string tempVar = userCommand.substr(0, userCommand.find_first_of(" "));
+	this->lowerString(tempVar);
+
+	return tempVar;
+}
 
 
-void FileSystem::cd(const std::string userCommand) {
+// START CD COMMAND
+
+void FileSystem::cd(const string userCommand) {
 	if (userCommand != "..") {
 		if(userCommand == "."){ this->m_currentPath = fs::current_path(); }
 		else {
@@ -66,7 +79,7 @@ void FileSystem::cd(const std::string userCommand) {
 
 			if (fs::exists(tempPath) && fs::is_directory(tempPath)) {
 				this->m_currentPath = tempPath.string();
-				this->getCurrentPath(true);
+				this->showCurrentPath(true);
 			}
 			else {
 				this->m_terminalUI->showErrorMessage("PATH");
@@ -77,17 +90,57 @@ void FileSystem::cd(const std::string userCommand) {
 	}
 	else {
 		this->m_currentPath = m_currentPath.parent_path();
-		this->getCurrentPath(true);
+		this->showCurrentPath(true);
 	}
 }
 
-string FileSystem::checkCommand(string& userCommand) const{
-	string tempVar = userCommand.substr(0, userCommand.find_first_of(" "));
-	this->lowerString(tempVar);
+// END CD COMMAND
 
-	return tempVar;
+// START LS COMMAND
+
+void FileSystem::ls(string userCommand) {
+	vector<string> L_file;
+	if (commandLSChecker(userCommand)) {
+		if (!(fs::is_empty(userCommand))) {
+			cout << "Directory(ies): " << endl;
+
+			for (auto const& element_ : fs::directory_iterator(userCommand)) {
+				if (!(fs::is_directory(element_))) { L_file.push_back(element_.path().filename().string()); }
+				else {
+					cout << "\t" << element_.path().filename().string() << endl;
+				}
+			}
+		}
+		else {
+			cout << "This file is empty! " << endl;
+		}
+
+		if (L_file.size() > 0) {
+			cout << "File(s): " << endl;
+			for (const string element : L_file) {
+				cout << "\t" << element << endl;
+			}
+		}
+	}
+	else {
+		this->m_terminalUI->showErrorMessage("PATH");
+	}
 }
 
-void FileSystem::getCurrentPath(const bool& jump) const {
+
+bool FileSystem::commandLSChecker(const string userCommand) const {
+	return (userCommand == this->m_currentPath.string() || (fs::is_directory(userCommand) && fs::exists(userCommand)));
+	// return true if userCommand is current path or other valid directory path
+
+}
+
+
+
+
+void FileSystem::showCurrentPath(const bool& jump) const {
 	this->m_terminalUI->showPath(this->m_currentPath, jump);
+}
+
+string FileSystem::getCurrentPath() const {
+	return this->m_currentPath.string();
 }
